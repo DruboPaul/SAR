@@ -10,7 +10,7 @@ This repository contains the clean, production-ready code, datasets, and scripts
 ├── README.md                           # Main replication guide (this file)
 ├── HydroSAR_Replication_Notebook.ipynb  # Unified replication notebook (Jupyter/Colab)
 ├── data/                               # Data folder (contains validation points & rasters)
-│   ├── Final_Binary_Field_Validation_2025.csv      # 4,310 validation points
+│   ├── GEE_Upload_Ready_LatLon.csv                 # 4,310 validation points with Lat/Lon
 │   ├── Bangladesh_District_VV_Histograms_2015_2025.csv # District backscatter histograms
 │   └── Task1_Rasters/                  # Place exported GeoTIFFs here for Task 1
 ├── gee_scripts/                        # JavaScript files to copy-paste into GEE Editor
@@ -42,7 +42,7 @@ This task visualizes the performance of 5 different water mapping methods over G
 
 ### Task 2: Per-Class Accuracy Assessment
 This task calculates the User's and Producer's Accuracy across three classes: **Permanent**, **Semi-permanent**, and **Ephemeral** water, using 4,310 validated ground-truth points.
-1. Upload `data/Final_Binary_Field_Validation_2025.csv` as an Asset in your GEE account.
+1. Upload `data/GEE_Upload_Ready_LatLon.csv` as an Asset in your GEE account.
 2. Paste and run `gee_scripts/task2_extract_occurrence.js` in GEE. It will sample the JRC Global Surface Water Occurrence dataset at the validation points.
 3. Export the resulting table and download it as `Validation_Points_With_Occurrence.csv`. Place it inside the `data/` folder.
 4. Run the Python accuracy script:
