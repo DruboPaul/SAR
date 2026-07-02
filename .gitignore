@@ -6,7 +6,6 @@ __pycache__/
 venv*/
 
 # Data files (too large for GitHub)
-data/Bangladesh_District_VV_Histograms_2015_2025.csv
 data/Task1_Rasters/*.tif
 
 # OS files
@@ -16,4 +15,5 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
 
