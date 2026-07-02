@@ -1,6 +1,6 @@
 # HydroSAR-BD: Spatiotemporal GMM for Dynamic Surface Water Mapping
 
-This repository contains the complete, production-ready codebase for **HydroSAR-BD**, a framework for dynamic surface water mapping across Bangladesh using Sentinel-1 SAR and Sentinel-2 optical data. It includes both the core analysis scripts for the original manuscript and the supplementary validation scripts developed during the peer-review process.
+This repository contains the complete, production-ready codebase for **HydroSAR-BD**, a framework for dynamic surface water mapping across Bangladesh using Sentinel-1 SAR and Sentinel-2 optical data. It includes both the core analysis scripts for the original manuscript and the supplementary validation scripts for comprehensive evaluation.
 
 ---
 
@@ -35,7 +35,7 @@ To run the primary ST-GMM algorithm on the SAR backscatter histograms:
 python python_scripts/01_batch_gmm_processor.py
 ```
 
-### B. Accuracy Assessment & Validation (Reviewer Revisions)
+### B. Accuracy Assessment & Validation (Validation & Analysis)
 To reproduce the rigorous validation metrics requested by reviewers:
 1. Ensure the ground truth data (`data/GEE_Upload_Ready_LatLon.csv`) has been processed through Earth Engine using `04_extract_jrc_occurrence.js`.
 2. Run the accuracy evaluation:
