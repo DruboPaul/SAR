@@ -1,0 +1,4 @@
+Water Class,Sample Size (N),True Positives (TP),False Positives (FP),False Negatives (FN),True Negatives (TN),User's Accuracy (UA %),Producer's Accuracy (PA %),Class Accuracy (OA %)
+Permanent,522,342,58,5,117,85.5,98.56,87.93
+Semi-permanent,726,388,75,9,254,83.8,97.73,88.43
+Ephemeral,1070,483,64,17,506,88.3,96.6,92.43
