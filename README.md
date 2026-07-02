@@ -1,71 +1,55 @@
-# HydroSAR-BD: Replication and Reviewer Revision Repository
+# HydroSAR-BD: Spatiotemporal GMM for Dynamic Surface Water Mapping
 
-This repository contains the clean, production-ready code, datasets, and scripts to reproduce the core results and address the reviewer comments for the **HydroSAR-BD** manuscript (a dynamic GMM-based surface water mapping framework using Sentinel-1 SAR and Sentinel-2 optical data).
+This repository contains the complete, production-ready codebase for **HydroSAR-BD**, a framework for dynamic surface water mapping across Bangladesh using Sentinel-1 SAR and Sentinel-2 optical data. It includes both the core analysis scripts for the original manuscript and the supplementary validation scripts developed during the peer-review process.
 
 ---
 
 ## 📁 Repository Structure
 
-```text
-├── README.md                           # Main replication guide (this file)
-├── HydroSAR_Replication_Notebook.ipynb  # Unified replication notebook (Jupyter/Colab)
-├── data/                               # Data folder (contains validation points & rasters)
-│   ├── GEE_Upload_Ready_LatLon.csv                 # 4,310 validation points with Lat/Lon
-│   ├── Bangladesh_District_VV_Histograms_2015_2025.csv # District backscatter histograms
-│   └── Task1_Rasters/                  # Place exported GeoTIFFs here for Task 1
-├── gee_scripts/                        # JavaScript files to copy-paste into GEE Editor
-│   ├── task1_export_5panels.js         # Exports 5 scenarios for comparative map
-│   └── task2_extract_occurrence.js     # Extracts JRC occurrence frequency for points
-└── python_scripts/                     # Python scripts for local execution
-    ├── task1_plot_5panels.py           # Compiles and plots the 5-panel map
-    ├── task2_per_class_accuracy.py     # Calculates per-class validation accuracy
-    └── task3_gmm_aic_bic.py            # Performs GMM component information tests
+### 1. `gee_scripts/` (Google Earth Engine JavaScript)
+*   **`01_export_11yr_histograms.js`**: Exports massive multi-year SAR backscatter histograms.
+*   **`02a_export_february_thresholds.js` / `02b_export_july_thresholds.js`**: Extracts distinct dry and wet season thresholds.
+*   **`03_export_comparative_models.js`**: Generates a 5-panel comparative map of Random Forest, Otsu, ST-GMM, and NDWI.
+*   **`04_extract_jrc_occurrence.js`**: Extracts long-term JRC surface water occurrence frequencies.
+*   **`10_earth_engine_app.js`**: The source code for the interactive HydroSAR-BD Web Application.
+
+### 2. `python_scripts/` (Local Python Analysis & Plotting)
+*   **`01_batch_gmm_processor.py`**: The core Spatiotemporal Gaussian Mixture Model (ST-GMM) algorithm.
+*   **`02_compute_water_area.py`**: Computes areal water statistics across divisions/districts.
+*   **`03_generate_core_figures.py`**: Generates publication-ready figures for the manuscript.
+*   **`04_generate_flowchart.py`**: Creates the programmatic methodology flowchart.
+*   **`05_plot_comparative_map.py`**: Plots the high-resolution 5-panel comparative model map.
+*   **`06_per_class_accuracy.py`**: Evaluates User's and Producer's Accuracies across Permanent, Semi-permanent, and Ephemeral hydroperiods.
+*   **`07_gmm_information_criteria.py`**: Calculates AIC/BIC goodness-of-fit diagnostics for component justification.
+
+### 3. `data/` and `results/`
+*   Contains the validated ground-truth datasets, extracted occurrence frequencies, histogram inputs, and the resulting high-resolution output figures and accuracy tables.
+
+---
+
+## 🛠️ Replication Guide
+
+### A. Core GMM Processing
+To run the primary ST-GMM algorithm on the SAR backscatter histograms:
+```bash
+python python_scripts/01_batch_gmm_processor.py
+```
+
+### B. Accuracy Assessment & Validation (Reviewer Revisions)
+To reproduce the rigorous validation metrics requested by reviewers:
+1. Ensure the ground truth data (`data/GEE_Upload_Ready_LatLon.csv`) has been processed through Earth Engine using `04_extract_jrc_occurrence.js`.
+2. Run the accuracy evaluation:
+```bash
+python python_scripts/06_per_class_accuracy.py
+```
+
+### C. GMM Component Selection (AIC/BIC)
+To statistically validate the selection of a 2-component GMM over 3- or 4-component alternatives:
+```bash
+python python_scripts/07_gmm_information_criteria.py
 ```
 
 ---
 
-## 🛠️ Step-by-Step Replication Guide
-
-### Task 1: 5-Panel Comparative Visual Map
-This task visualizes the performance of 5 different water mapping methods over Gazipur District, Bangladesh.
-1. Open the [Google Earth Engine Code Editor](https://code.earthengine.google.com/).
-2. Copy and paste the code from `gee_scripts/task1_export_5panels.js` and click **Run**.
-3. In the **Tasks** tab (right panel), click **Run** for all 5 tasks to export the GeoTIFFs to your Google Drive.
-4. Download the 5 exported `.tif` files and place them in the `data/Task1_Rasters/` directory.
-5. Run the plotting script locally:
-   ```bash
-   python python_scripts/task1_plot_5panels.py
-   ```
-   The final high-resolution figure will be saved in `results/Figure_5Panel_Comparative_Map.png`.
-
----
-
-### Task 2: Per-Class Accuracy Assessment
-This task calculates the User's and Producer's Accuracy across three classes: **Permanent**, **Semi-permanent**, and **Ephemeral** water, using 4,310 validated ground-truth points.
-1. Upload `data/GEE_Upload_Ready_LatLon.csv` as an Asset in your GEE account.
-2. Paste and run `gee_scripts/task2_extract_occurrence.js` in GEE. It will sample the JRC Global Surface Water Occurrence dataset at the validation points.
-3. Export the resulting table and download it as `Validation_Points_With_Occurrence.csv`. Place it inside the `data/` folder.
-4. Run the Python accuracy script:
-   ```bash
-   python python_scripts/task2_per_class_accuracy.py
-   ```
-   The results table will be printed on screen and saved under `results/per_class_accuracy.csv`.
-
----
-
-### Task 3: GMM Component Justification (AIC/BIC Test)
-This task fits 2, 3, 4, and 5-component GMMs on Sentinel-1 backscatter values to statistically prove that a 2-component model is optimal and avoids overfitting.
-1. Ensure `data/Bangladesh_District_VV_Histograms_2015_2025.csv` is present.
-2. Run the script:
-   ```bash
-   python python_scripts/task3_gmm_aic_bic.py
-   ```
-   This will output the AIC and BIC scores for Sunamganj, Dhaka, and Bhola districts, and generate the diagnostic plot `results/GMM_AIC_BIC_Test_Plot.png`.
-
----
-
-## 📓 Jupyter Notebook (Google Colab)
-For a single, unified execution environment:
-* Open `HydroSAR_Replication_Notebook.ipynb` in Jupyter Notebook, JupyterLab, or upload it to **Google Colab**.
-* Ensure the required files are present in the `data/` directory.
-* Run the cells sequentially to reproduce the figures and tables in a single step.
+## 📓 Unified Execution (Jupyter)
+For a seamless, end-to-end execution of the validation pipeline, open `HydroSAR_Replication_Notebook.ipynb` in **Jupyter** or **Google Colab**. This notebook consolidates the entire review-stage validation into a single workflow.
