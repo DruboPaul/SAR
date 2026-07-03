@@ -33,11 +33,11 @@ def plot_5panel_map():
 
     fig, axes = plt.subplots(1, 5, figsize=(25, 6))
     titles = [
-        "(a) Sentinel-1 SAR VV\n(Raw Backscatter)", 
-        "(b) Random Forest\n(Supervised)", 
-        "(c) Otsu Thresholding\n(Global Unsupervised)", 
-        "(d) ST-GMM\n(Proposed Method)", 
-        "(e) Sentinel-2 NDWI\n(Optical Reference)"
+        "(a) Sentinel-1 SAR VV\n(Raw Backscatter - Sept 2020)", 
+        "(b) Random Forest\n(Supervised - Sept 2020)", 
+        "(c) Otsu Thresholding\n(Global Unsupervised - Sept 2020)", 
+        "(d) ST-GMM\n(Proposed Method - Sept 2020)", 
+        "(e) Sentinel-2 NDWI\n(Optical Reference - Sept 2020)"
     ]
     
     cmap_binary = plt.cm.colors.ListedColormap(['#e0e0e0', '#004c99']) # Light gray for land, dark blue for water
@@ -52,6 +52,8 @@ def plot_5panel_map():
             
             if key == 'SAR_VV':
                 ax.imshow(img, cmap='gray', vmin=-25, vmax=0)
+            elif key == 'NDWI':
+                ax.imshow(img, cmap='RdBu', vmin=-1.0, vmax=1.0)
             else:
                 ax.imshow(img, cmap=cmap_binary, vmin=0, vmax=1)
                 
