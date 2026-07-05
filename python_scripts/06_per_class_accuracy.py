@@ -26,17 +26,17 @@ def run_per_class_accuracy():
     # Fill missing occurrence values with 0
     df['occurrence'] = df['occurrence'].fillna(0)
     
-    # Sort by JRC occurrence descending (stable sort to preserve original order of duplicates)
-    df_sorted = df.sort_values(by='occurrence', ascending=False, kind='mergesort').copy()
+    # The 2382 points that are actually Non-water in ground truth
+    df.loc[df['Field_Truth'] == 0, 'Water_Class'] = 'Non-water'
     
-    # Assign classes based on the exact sample size stratification reported in the manuscript
-    # Permanent: 700, Semi-permanent: 700, Ephemeral: 528, Non-water: 2382
-    df_sorted['Water_Class'] = 'Non-water'
-    df_sorted.iloc[:700, df_sorted.columns.get_loc('Water_Class')] = 'Permanent'
-    df_sorted.iloc[700:1400, df_sorted.columns.get_loc('Water_Class')] = 'Semi-permanent'
-    df_sorted.iloc[1400:1928, df_sorted.columns.get_loc('Water_Class')] = 'Ephemeral'
+    # The 1928 points that are actually Water in ground truth
+    # We sort ONLY the true water points by JRC occurrence to split into subclasses
+    water_idx = df[df['Field_Truth'] == 1].sort_values(by='occurrence', ascending=False, kind='mergesort').index
     
-    df = df_sorted
+    # Assign subclasses based on exact manuscript counts (700, 700, 528)
+    df.loc[water_idx[:700], 'Water_Class'] = 'Permanent'
+    df.loc[water_idx[700:1400], 'Water_Class'] = 'Semi-permanent'
+    df.loc[water_idx[1400:], 'Water_Class'] = 'Ephemeral'
     
     results = []
     classes = ['Permanent', 'Semi-permanent', 'Ephemeral', 'Non-water']
@@ -62,13 +62,17 @@ def run_per_class_accuracy():
         fn = ((y_true == 1) & (y_pred == 0)).sum()
         tn = ((y_true == 0) & (y_pred == 0)).sum()
         
-        # User's Accuracy (Precision for water class)
-        # UA = TP / (TP + FP) -> percentage of predicted water that is actually water
-        ua = (tp / (tp + fp)) * 100 if (tp + fp) > 0 else 0.0
-        
-        # Producer's Accuracy (Recall/Sensitivity for water class)
-        # PA = TP / (TP + FN) -> percentage of actual water correctly identified
-        pa = (tp / (tp + fn)) * 100 if (tp + fn) > 0 else 0.0
+        if cls == 'Non-water':
+            # For non-water, positive class is inverted (we care about TN)
+            # User's Accuracy (Precision for Non-water)
+            ua = (tn / (tn + fn)) * 100 if (tn + fn) > 0 else 0.0
+            # Producer's Accuracy (Recall for Non-water)
+            pa = (tn / (tn + fp)) * 100 if (tn + fp) > 0 else 0.0
+        else:
+            # User's Accuracy (Precision for water class)
+            ua = (tp / (tp + fp)) * 100 if (tp + fp) > 0 else 0.0
+            # Producer's Accuracy (Recall for water class)
+            pa = (tp / (tp + fn)) * 100 if (tp + fn) > 0 else 0.0
         
         # Overall Accuracy for the class
         oa = ((tp + tn) / len(sub_df)) * 100 if len(sub_df) > 0 else 0.0
