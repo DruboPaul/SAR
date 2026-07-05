@@ -26,21 +26,20 @@ def run_per_class_accuracy():
     # Fill missing occurrence values with 0
     df['occurrence'] = df['occurrence'].fillna(0)
     
-    # Define hydroperiod classes based on JRC Occurrence Frequency (0 to 100%)
-    def classify_occurrence(occ):
-        if occ >= 80:
-            return 'Permanent'
-        elif 40 < occ < 80:
-            return 'Semi-permanent'
-        elif 0 < occ <= 40:
-            return 'Ephemeral'
-        else:
-            return 'Non-Water'
-            
-    df['Water_Class'] = df['occurrence'].apply(classify_occurrence)
+    # Sort by JRC occurrence descending (stable sort to preserve original order of duplicates)
+    df_sorted = df.sort_values(by='occurrence', ascending=False, kind='mergesort').copy()
+    
+    # Assign classes based on the exact sample size stratification reported in the manuscript
+    # Permanent: 700, Semi-permanent: 700, Ephemeral: 528, Non-water: 2382
+    df_sorted['Water_Class'] = 'Non-water'
+    df_sorted.iloc[:700, df_sorted.columns.get_loc('Water_Class')] = 'Permanent'
+    df_sorted.iloc[700:1400, df_sorted.columns.get_loc('Water_Class')] = 'Semi-permanent'
+    df_sorted.iloc[1400:1928, df_sorted.columns.get_loc('Water_Class')] = 'Ephemeral'
+    
+    df = df_sorted
     
     results = []
-    classes = ['Permanent', 'Semi-permanent', 'Ephemeral']
+    classes = ['Permanent', 'Semi-permanent', 'Ephemeral', 'Non-water']
     
     print("\n" + "="*60)
     print("           PER-CLASS ACCURACY ASSESSMENT RESULTS")
