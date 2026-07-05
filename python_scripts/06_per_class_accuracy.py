@@ -26,24 +26,32 @@ def run_per_class_accuracy():
     # Fill missing occurrence values with 0
     df['occurrence'] = df['occurrence'].fillna(0)
     
-    # The 2382 points that are actually Non-water in ground truth
-    df.loc[df['Field_Truth'] == 0, 'Water_Class'] = 'Non-water'
+    # =========================================================================
+    # CORRECT METHODOLOGY: Assign hydroperiod classes by JRC Water Occurrence
+    # value REGARDLESS of Field Truth. Then evaluate binary model within each.
+    # =========================================================================
     
-    # The 1928 points that are actually Water in ground truth
-    # We sort ONLY the true water points by JRC occurrence to split into subclasses
-    water_idx = df[df['Field_Truth'] == 1].sort_values(by='occurrence', ascending=False, kind='mergesort').index
+    # Sort ALL points by JRC occurrence descending (stable sort)
+    df_sorted = df.sort_values(by='occurrence', ascending=False, kind='mergesort').copy()
     
-    # Assign subclasses based on exact manuscript counts (700, 700, 528)
-    df.loc[water_idx[:700], 'Water_Class'] = 'Permanent'
-    df.loc[water_idx[700:1400], 'Water_Class'] = 'Semi-permanent'
-    df.loc[water_idx[1400:], 'Water_Class'] = 'Ephemeral'
+    # Assign hydroperiod classes based on manuscript sample sizes
+    # Permanent: 700, Semi-permanent: 700, Ephemeral: 528, Non-water: 2382
+    df_sorted['Water_Class'] = 'Non-water'
+    df_sorted.iloc[:700, df_sorted.columns.get_loc('Water_Class')] = 'Permanent'
+    df_sorted.iloc[700:1400, df_sorted.columns.get_loc('Water_Class')] = 'Semi-permanent'
+    df_sorted.iloc[1400:1928, df_sorted.columns.get_loc('Water_Class')] = 'Ephemeral'
+    
+    df = df_sorted
     
     results = []
     classes = ['Permanent', 'Semi-permanent', 'Ephemeral', 'Non-water']
     
-    print("\n" + "="*60)
-    print("           PER-CLASS ACCURACY ASSESSMENT RESULTS")
-    print("="*60)
+    # Accumulators for binary aggregate
+    total_tp, total_fp, total_fn, total_tn = 0, 0, 0, 0
+    
+    print("\n" + "="*80)
+    print("              PER-CLASS ACCURACY ASSESSMENT RESULTS")
+    print("="*80)
     
     for cls in classes:
         sub_df = df[df['Water_Class'] == cls]
@@ -53,26 +61,26 @@ def run_per_class_accuracy():
             continue
             
         y_true = sub_df['Field_Truth']
-        # class is the prediction band exported from your SAR algorithm (0 = non-water, 1 = water)
+        # 'class' is the prediction band exported from SAR algorithm (0=non-water, 1=water)
         y_pred = sub_df['class'] 
         
-        # Calculate Confusion Matrix elements
-        tp = ((y_true == 1) & (y_pred == 1)).sum()
-        fp = ((y_true == 0) & (y_pred == 1)).sum()
-        fn = ((y_true == 1) & (y_pred == 0)).sum()
-        tn = ((y_true == 0) & (y_pred == 0)).sum()
+        # Calculate Confusion Matrix elements (binary: Water=positive, Non-water=negative)
+        tp = int(((y_true == 1) & (y_pred == 1)).sum())
+        fp = int(((y_true == 0) & (y_pred == 1)).sum())
+        fn = int(((y_true == 1) & (y_pred == 0)).sum())
+        tn = int(((y_true == 0) & (y_pred == 0)).sum())
         
-        if cls == 'Non-water':
-            # For non-water, positive class is inverted (we care about TN)
-            # User's Accuracy (Precision for Non-water)
-            ua = (tn / (tn + fn)) * 100 if (tn + fn) > 0 else 0.0
-            # Producer's Accuracy (Recall for Non-water)
-            pa = (tn / (tn + fp)) * 100 if (tn + fp) > 0 else 0.0
-        else:
-            # User's Accuracy (Precision for water class)
-            ua = (tp / (tp + fp)) * 100 if (tp + fp) > 0 else 0.0
-            # Producer's Accuracy (Recall for water class)
-            pa = (tp / (tp + fn)) * 100 if (tp + fn) > 0 else 0.0
+        # Accumulate for binary aggregate
+        total_tp += tp
+        total_fp += fp
+        total_fn += fn
+        total_tn += tn
+        
+        # User's Accuracy (Precision for water class)
+        ua = (tp / (tp + fp)) * 100 if (tp + fp) > 0 else 0.0
+        
+        # Producer's Accuracy (Recall for water class)
+        pa = (tp / (tp + fn)) * 100 if (tp + fn) > 0 else 0.0
         
         # Overall Accuracy for the class
         oa = ((tp + tn) / len(sub_df)) * 100 if len(sub_df) > 0 else 0.0
@@ -84,11 +92,25 @@ def run_per_class_accuracy():
             'False Positives (FP)': fp,
             'False Negatives (FN)': fn,
             'True Negatives (TN)': tn,
-            'User\'s Accuracy (UA %)': round(ua, 2),
-            'Producer\'s Accuracy (PA %)': round(pa, 2),
+            "User's Accuracy (UA %)": round(ua, 2),
+            "Producer's Accuracy (PA %)": round(pa, 2),
             'Class Accuracy (OA %)': round(oa, 2)
         })
-        
+    
+    # --- Binary Aggregate Metrics ---
+    total_n = total_tp + total_fp + total_fn + total_tn
+    bin_ua_water = (total_tp / (total_tp + total_fp)) * 100 if (total_tp + total_fp) > 0 else 0.0
+    bin_pa_water = (total_tp / (total_tp + total_fn)) * 100 if (total_tp + total_fn) > 0 else 0.0
+    bin_ua_nonwater = (total_tn / (total_tn + total_fn)) * 100 if (total_tn + total_fn) > 0 else 0.0
+    bin_pa_nonwater = (total_tn / (total_tn + total_fp)) * 100 if (total_tn + total_fp) > 0 else 0.0
+    bin_oa = ((total_tp + total_tn) / total_n) * 100 if total_n > 0 else 0.0
+    
+    # Cohen's Kappa
+    pe = (((total_tp + total_fp) * (total_tp + total_fn)) + 
+          ((total_fn + total_tn) * (total_fp + total_tn))) / (total_n ** 2)
+    po = (total_tp + total_tn) / total_n
+    kappa = (po - pe) / (1 - pe) if (1 - pe) > 0 else 0.0
+    
     # Convert to DataFrame
     results_df = pd.DataFrame(results)
     
@@ -97,8 +119,15 @@ def run_per_class_accuracy():
     results_df.to_csv(output_path, index=False)
     
     print(results_df.to_string(index=False))
-    print("="*60)
-    print(f"Results successfully saved to: {output_path}\n")
+    print("-"*80)
+    print(f"\n  BINARY AGGREGATE METRICS (n = {total_n}):")
+    print(f"    TP = {total_tp}, FP = {total_fp}, FN = {total_fn}, TN = {total_tn}")
+    print(f"    Water   — UA: {bin_ua_water:.2f}%,  PA: {bin_pa_water:.2f}%")
+    print(f"    Non-water — UA: {bin_ua_nonwater:.2f}%,  PA: {bin_pa_nonwater:.2f}%")
+    print(f"    Overall Accuracy: {bin_oa:.2f}%")
+    print(f"    Cohen's Kappa: {kappa:.2f}")
+    print("="*80)
+    print(f"Results saved to: {output_path}\n")
 
 if __name__ == "__main__":
     run_per_class_accuracy()
