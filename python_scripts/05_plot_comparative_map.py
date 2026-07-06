@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 import rasterio
 import numpy as np
 
-# Set working directories (go 3 levels up to reach workspace root)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Set working directories (go 2 levels up to reach workspace root)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RASTER_DIR = os.path.join(BASE_DIR, "data", "Task1_Rasters")
-OUTPUT_DIR = os.path.join(BASE_DIR, "Reviewer_Revisions")
+OUTPUT_DIR = os.path.join(BASE_DIR, "results")
 
 # The expected filenames from GEE export
 FILES = {

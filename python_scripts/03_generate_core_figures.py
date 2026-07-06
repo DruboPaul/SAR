@@ -237,10 +237,11 @@ def fig8_monthly_boxplot():
 
     fig, ax = plt.subplots(figsize=(11, 5.5))
 
-    bp = ax.boxplot(monthly_data, labels=MONTH_LABELS, patch_artist=True,
+    bp = ax.boxplot(monthly_data, patch_artist=True,
                     widths=0.6, showfliers=True, zorder=3,
                     medianprops=dict(color='#d62728', lw=2),
                     flierprops=dict(marker='o', ms=5, markerfacecolor='#999'))
+    ax.set_xticklabels(MONTH_LABELS)
 
     # Color by season
     season_colors = ['#4393c3','#4393c3','#92c5de','#92c5de','#92c5de',

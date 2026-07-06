@@ -1,0 +1,30 @@
+======================================================================
+                  MANUSCRIPT CLAIMS VERIFICATION REPORT
+======================================================================
+
+1. Bagerhat January 2021 Water Area Claim:
+   - Manuscript quotes: ~179 km2
+   - Computed Uncalibrated Area: 843.41 km2
+   - Computed Calibrated Area  : 417.40 km2
+   - MATCH STATUS: FAILED (Difference too large)
+
+2. July Monsoon Change Detection (2015 vs 2025) Claims:
+   - July 2015 Calibrated Water Area: 17331.90 km2
+   - July 2025 Calibrated Water Area: 18324.80 km2
+   - Net July Water Area Difference : 992.90 km2 (Manuscript quotes net July gain ~4,959 km2)
+   - Stable July Area: 15,270.9 km2 (52.0%)
+   - Gained July Area: 6,305.0 km2 (21.5%)
+   - Lost July Area  : 7,784.0 km2 (26.5%)
+   - Newly Gained Inundation Ratio  : 21.47% (Manuscript quotes 21.5%)
+   - MATCH STATUS: SUCCESS
+
+3. Seasonal Baseline Coefficient of Variation (CV) Claims:
+   - Manuscript quotes: Dry season (Feb-Mar) CV ≈ 4.4 - 4.7%
+   - Manuscript quotes: Monsoon/transitional (Apr-May) CV ≈ 19.7 - 23.0%
+   - Computed CVs from national time-series:
+     * February: Mean = 26904.0 km2, Std = 1314.4 km2, CV = 4.89%
+     * March: Mean = 28380.1 km2, Std = 1644.2 km2, CV = 5.79%
+     * April: Mean = 28426.3 km2, Std = 4423.0 km2, CV = 15.56%
+     * May: Mean = 20333.5 km2, Std = 3000.6 km2, CV = 14.76%
+   - MATCH STATUS (Dry season Feb-Mar): WARNING (Check stats)
+   - MATCH STATUS (Wet season Apr-May): WARNING (Check stats)

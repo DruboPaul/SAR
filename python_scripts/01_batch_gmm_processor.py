@@ -56,6 +56,8 @@ MONTH_NAMES = {
     9: 'September', 10: 'October', 11: 'November', 12: 'December'
 }
 
+processed_count = 0
+
 def fit_gmm_and_find_threshold(row):
     """
     Fits a 2-component GMM to the histogram data and finds the intersection.
@@ -69,8 +71,19 @@ def fit_gmm_and_find_threshold(row):
     counts = counts[mask]
     bins = bins[mask]
     
+    global processed_count
+    processed_count += 1
+    if processed_count % 500 == 0:
+        print(f"  Processed {processed_count}/8448 rows...", flush=True)
+
     if len(bins) < 5 or counts.sum() < 100:
         return np.nan # Not enough data for a robust fit
+
+    # Downsample if total counts are large to speed up GMM fitting
+    total_counts = counts.sum()
+    if total_counts > 10000:
+        scale_factor = total_counts / 10000.0
+        counts = (counts / scale_factor).astype(int)
 
     # Reconstruct samples
     samples = np.repeat(bins, counts.astype(int))

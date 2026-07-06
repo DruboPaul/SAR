@@ -1,0 +1,14 @@
+Metric,Value
+Total Validation Points (N),4310
+True Positives (TP),1866
+False Positives (FP),259
+False Negatives (FN),62
+True Negatives (TN),2123
+Overall Accuracy (OA %),92.55
+Water User's Accuracy (UA %),87.81
+Water Producer's Accuracy (PA %),96.78
+Non-Water User's Accuracy (UA %),97.16
+Non-Water Producer's Accuracy (PA %),89.13
+Cohen's Kappa,0.8508
+McNemar Test Chi-Square (vs Otsu),142.7597
+McNemar Test p-value,6.63e-33
