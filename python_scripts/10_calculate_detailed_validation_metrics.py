@@ -17,18 +17,17 @@ def calculate_validation_metrics():
     df = pd.read_csv(INPUT_CSV)
     df['occurrence'] = df['occurrence'].fillna(0)
 
-    # Assign water class based on occurrence frequency (matching GEE extract / manuscript)
-    def assign_water_class(occ):
-        if occ >= 80:
-            return 'Permanent'
-        elif occ >= 40:
-            return 'Semi-permanent'
-        elif occ > 0:
-            return 'Ephemeral'
-        else:
-            return 'Non-water'
-
-    df['Water_Class'] = df['occurrence'].apply(assign_water_class)
+    # Sort ALL points by JRC occurrence descending (stable sort)
+    df_sorted = df.sort_values(by='occurrence', ascending=False, kind='mergesort').copy()
+    
+    # Assign hydroperiod classes based on manuscript sample sizes
+    # Permanent: 700, Semi-permanent: 700, Ephemeral: 528, Non-water: 2382
+    df_sorted['Water_Class'] = 'Non-water'
+    df_sorted.iloc[:700, df_sorted.columns.get_loc('Water_Class')] = 'Permanent'
+    df_sorted.iloc[700:1400, df_sorted.columns.get_loc('Water_Class')] = 'Semi-permanent'
+    df_sorted.iloc[1400:1928, df_sorted.columns.get_loc('Water_Class')] = 'Ephemeral'
+    
+    df = df_sorted
 
     # Calculate metrics for each class
     classes = ['Permanent', 'Semi-permanent', 'Ephemeral', 'Non-water']
