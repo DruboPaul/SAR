@@ -22,3 +22,8 @@ Zenodo/
 # Ignore Word documents in 5_issues folder
 5_issues/**/*.docx
 5_issues/*.docx
+
+# Ignore Word document generator scripts
+scripts/generate_docx_explanation.py
+scripts/generate_docx_bangla.py
+
