@@ -19,4 +19,6 @@ Thumbs.db
 
 Reviewer_Revisions/
 Zenodo/
-5_issues/
+# Ignore Word documents in 5_issues folder
+5_issues/**/*.docx
+5_issues/*.docx
