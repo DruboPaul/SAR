@@ -52,4 +52,7 @@ python python_scripts/07_gmm_information_criteria.py
 ---
 
 ## 📓 Unified Execution (Jupyter)
-For a seamless, end-to-end execution of the validation pipeline, open `HydroSAR_Replication_Notebook.ipynb` in **Jupyter** or **Google Colab**. This notebook consolidates the entire review-stage validation into a single workflow.
+For a seamless, end-to-end execution and validation of the pipeline, two professional Jupyter notebooks are provided:
+
+1. **`HydroSAR_Results_Replication.ipynb`**: Quick replication (~5 mins) using pre-computed datasets from GitHub. Generates all accuracy tables, diagnostic tests, and publication figures without requiring a Google Earth Engine account.
+2. **`HydroSAR_Full_GEE_Pipeline.ipynb`**: Full end-to-end pipeline. Authenticates via the GEE Python API to extract massive datasets directly from the archive and reproduce the entire analysis from scratch. Includes an interactive DEMO mode to quickly verify methodology on a single district.
