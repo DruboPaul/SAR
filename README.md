@@ -56,3 +56,8 @@ For a seamless, end-to-end execution and validation of the pipeline, two profess
 
 1. **`HydroSAR_Results_Replication.ipynb`**: Quick replication (~5 mins) using pre-computed datasets from GitHub. Generates all accuracy tables, diagnostic tests, and publication figures without requiring a Google Earth Engine account.
 2. **`HydroSAR_Full_GEE_Pipeline.ipynb`**: Full end-to-end pipeline. Authenticates via the GEE Python API to extract massive datasets directly from the archive and reproduce the entire analysis from scratch. Includes an interactive DEMO mode to quickly verify methodology on a single district.
+
+---
+
+## 💾 Data Availability Statement
+The primary datasets required for replication (such as the 55MB 11-year VV histogram dataset `Bangladesh_District_VV_Histograms_2015_2025.csv` and validation occurrence coordinates) are provided via GitHub Releases or hosted on an external data repository (e.g., Zenodo/Figshare) linked in the manuscript. To use the replication notebooks, ensure these files are located in the `data/` directory or update the notebook variables to point to the downloaded datasets.
