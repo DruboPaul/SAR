@@ -503,7 +503,10 @@ Displays the pre-computed five-panel comparison of surface water classification 
 
 > **Note:** This figure is displayed from a pre-computed PNG because the source GeoTIFF
 > raster files (~30 MB total) are too large for GitHub. To regenerate from raw rasters,
-> use `HydroSAR_Full_GEE_Pipeline.ipynb` which exports TIFs directly from GEE."""
+> use `HydroSAR_Full_GEE_Pipeline.ipynb` which exports TIFs directly from GEE.
+
+> [!NOTE]
+> The Random Forest classifier shown below was trained on labels derived directly from the NDWI thresholding. Therefore, its inclusion here serves to demonstrate the theoretical performance ceiling of a naive optically-supervised approach on this specific dataset, rather than acting as a completely independent validation model."""
 
 NB1_S7_CODE = r'''map_path = os.path.join(RESULTS_DIR, "Figure_5Panel_Comparative_Map.png")
 if os.path.exists(map_path):
