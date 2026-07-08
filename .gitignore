@@ -7,6 +7,7 @@ venv*/
 
 # Data files (too large for GitHub)
 data/Task1_Rasters/*.tif
+data/GEE_data/
 
 # OS files
 .DS_Store
@@ -25,3 +26,20 @@ Zenodo/
 scripts/generate_docx_explanation.py
 scripts/generate_docx_bangla.py
 
+# Temporary test scripts
+scripts/test_notebook.py
+
+# Large data files not for GitHub
+Bangladesh_District_VV_Histograms_2015_2025.csv
+HydroSAR-BD_Dataset_v1.0.zip
+GEE_Exports/
+HydroSAR-BD/
+7_Manuscript/
+
+# Backup and temporary files
+figures_backup_original/
+METHODOLOGY.html
+METHODOLOGY.md
+METHODOLOGY_Detailed.pdf
+Reviewer_Response_Accuracy_Explanation.docx
+test*.pdf
